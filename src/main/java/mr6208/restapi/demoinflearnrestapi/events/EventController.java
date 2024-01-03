@@ -1,7 +1,9 @@
 package mr6208.restapi.demoinflearnrestapi.events;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.Errors;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,7 +26,10 @@ public class EventController {
     private final ModelMapper modelMapper;
 
     @PostMapping
-    public ResponseEntity<Object> createdEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity<Object> createdEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
         Event event = modelMapper.map(eventDto, Event.class);
 
         Event newEvent = eventRepository.save(event);
